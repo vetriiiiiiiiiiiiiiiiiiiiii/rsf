@@ -482,3 +482,34 @@ a:hover > .nav-arc path, a:focus-visible > .nav-arc path, a[aria-current="page"]
   .glow, .ray, .spin, .spin-rev { animation: none; }
   .js .grow-up, .js .leaf-left, .js .leaf-right { animation: none; transform: none; }
 }
+
+/* ─── Launch ceremony (/launch) ───────────────────────────────── */
+@keyframes launch-pulse { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.55); opacity: 0; } }
+.launch-pulse { animation: launch-pulse 2.2s ease-out infinite; }
+@keyframes rings-turn { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.launch-rings { animation: rings-turn 120s linear infinite; }
+
+.launch-ready, .launch-logo { transition: opacity 0.6s ease, transform 0.8s var(--ease-out-quint); }
+.launch[data-phase="counting"] .launch-ready, .launch[data-phase="launched"] .launch-ready { opacity: 0; transform: scale(0.94); pointer-events: none; }
+.launch[data-phase="counting"] .launch-logo { opacity: 0.35; transform: translateY(-8vh) scale(0.8); }
+.launch[data-phase="launched"] .launch-logo { opacity: 1; transform: translateY(-14vh) scale(0.85); }
+
+@keyframes count-pop { 0% { transform: scale(1.6); opacity: 0; filter: blur(8px); } 25% { transform: scale(1); opacity: 1; filter: blur(0); } 80% { opacity: 1; } 100% { transform: scale(0.85); opacity: 0; } }
+.count-num { animation: count-pop 1s var(--ease-out-quint) both; }
+@keyframes count-ring { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.count-ring { stroke-dasharray: 1; animation: count-ring 0.95s linear both; }
+
+.launch-ray { stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0; }
+@keyframes ray-burst { 0% { stroke-dashoffset: 1; opacity: 0; } 15% { opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 0.9; } 100% { stroke-dashoffset: -1; opacity: 0; } }
+.launch[data-phase="launched"] .launch-ray { animation: ray-burst 1.8s var(--ease-draft) both; }
+
+@keyframes done-in { from { opacity: 0; transform: translateY(24px) scale(0.96); } to { opacity: 1; transform: none; } }
+.launch-done { animation: done-in 0.9s var(--ease-out-quint) 0.35s both; }
+
+.launch-curtain { clip-path: circle(0% at 50% 50%); }
+@keyframes curtain { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(150% at 50% 50%); } }
+.launch[data-phase="launched"] .launch-curtain { animation: curtain 1s var(--ease-draft) 1.6s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .launch-pulse, .launch-rings, .count-num, .count-ring, .launch-ray, .launch-done, .launch-curtain { animation-duration: 0.01ms !important; }
+}
