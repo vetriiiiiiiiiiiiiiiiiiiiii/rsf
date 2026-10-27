@@ -1,6 +1,6 @@
 # Security headers for static hosts that read this file (Netlify, Cloudflare Pages).
 # For other hosts, set the same headers in the server or CDN configuration.
-# The RSF Policy Framework (/policy/) loads Google Fonts and pako from cdnjs, and is framed by /rsf-policy/.
+# The RSF Policy Framework (/policy/) loads Google Fonts and pako from cdnjs, and is framed by /policylaunch/. /launch/ is a standalone page that loads Google Fonts.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
