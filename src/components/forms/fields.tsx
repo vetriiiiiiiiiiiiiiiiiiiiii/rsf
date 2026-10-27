@@ -163,11 +163,10 @@ export function Consent({ name = "consent", error, children, defaultChecked }: {
   );
 }
 
-/** Honeypot + signed timestamp issued by the server. */
-export function GuardFields({ token }: { token: string }) {
+/** Honeypot field: hidden from people, filled in by spam bots. */
+export function GuardFields() {
   return (
     <>
-      <input type="hidden" name="form_token" value={token} />
       <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
         <label>
           Leave this field empty

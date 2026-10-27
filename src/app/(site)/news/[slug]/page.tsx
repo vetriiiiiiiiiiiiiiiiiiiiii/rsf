@@ -5,12 +5,19 @@ import { MediaImage } from "@/components/ui/media-image";
 import { InView } from "@/components/motion/in-view";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { formatDate } from "@/lib/format";
-import { getNewsPost } from "@/lib/queries";
+import { getNews, getNewsPost } from "@/lib/queries";
+
+export const dynamicParams = false;
+export function generateStaticParams() {
+  // A static export needs at least one path; "_" renders the not-found page until news is added.
+  const slugs = getNews().map((n) => ({ slug: n.slug }));
+  return slugs.length ? slugs : [{ slug: "_" }];
+}
 
 export async function generateMetadata({ params }: PageProps<"/news/[slug]">): Promise<Metadata> {
   const n = await getNewsPost((await params).slug);
   if (!n) return { title: "Article not found" };
-  return { title: n.title, description: n.excerpt, openGraph: { type: "article", title: n.title, description: n.excerpt, publishedTime: n.publishedAt.toISOString(), images: n.image ? [`/media/${n.image.id}`] : undefined } };
+  return { title: n.title, description: n.excerpt, openGraph: { type: "article", title: n.title, description: n.excerpt, publishedTime: n.publishedAt, images: n.image ? [n.image.src] : undefined } };
 }
 
 export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">) {
@@ -24,7 +31,7 @@ export default async function NewsPostPage({ params }: PageProps<"/news/[slug]">
       </div>
       <InView data-reveal className="shell grid-12 gap-y-8 py-12 md:py-20">
         <p className="label col-span-12 text-blue lg:col-span-3">
-          <time dateTime={n.publishedAt.toISOString()}>{formatDate(n.publishedAt)}</time>
+          <time dateTime={n.publishedAt}>{formatDate(n.publishedAt)}</time>
         </p>
         <div className="col-span-12 lg:col-span-8 lg:col-start-5">
           <h1 className="display-md text-ink">{n.title}</h1>

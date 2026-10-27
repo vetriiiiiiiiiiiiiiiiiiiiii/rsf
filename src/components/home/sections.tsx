@@ -271,8 +271,8 @@ export function People({ mentors }: { mentors: PersonRow[] }) {
 
 /* ─── § 07 — Calendar ──────────────────────────────────────────── */
 
-type EventRow = { slug: string; title: string; category: string; startsAt: Date; location: string | null };
-type NewsRow = { slug: string; title: string; excerpt: string; publishedAt: Date };
+type EventRow = { slug: string; title: string; category: string; startDate: string | null; endDate: string | null; location: string | null; status: string };
+type NewsRow = { slug: string; title: string; excerpt: string; publishedAt: string };
 
 export function Calendar({ events, news }: { events: EventRow[]; news: NewsRow[] }) {
   return (
@@ -281,7 +281,7 @@ export function Calendar({ events, news }: { events: EventRow[]; news: NewsRow[]
         <SectionHead index="07" label="Calendar" title={"Events & *announcements.*"} className="col-span-12 lg:col-span-5" size="display-md" />
         <div className="col-span-12 lg:col-span-7 lg:col-start-6">
           <div className="flex items-baseline justify-between border-b border-ink pb-2">
-            <h3 className="label text-ink">Upcoming</h3>
+            <h3 className="label text-ink">Current & upcoming</h3>
             <Link href="/events" className="label u-link text-blue">
               Full calendar
             </Link>
@@ -289,18 +289,27 @@ export function Calendar({ events, news }: { events: EventRow[]; news: NewsRow[]
           {events.length ? (
             <ul>
               {events.slice(0, 4).map((e) => {
-                const p = dateParts(e.startsAt);
+                const p = e.startDate ? dateParts(e.startDate) : null;
                 return (
                   <li key={e.slug} className="border-b border-rule bg-white">
-                    <Link href={`/events/${e.slug}`} className="group grid grid-cols-[4.5rem_1fr_auto] items-center gap-4 py-5">
-                      <span className="leading-none">
-                        <span className="block text-[2.4rem] font-normal tabular-nums text-ink">{p.day}</span>
-                        <span className="label-sm text-muted">
-                          {p.month} {p.year}
-                        </span>
+                    <Link href={`/events/${e.slug}/`} className="group grid grid-cols-[4.5rem_1fr_auto] items-center gap-4 py-5 pr-3">
+                      <span className="pl-3 leading-none">
+                        {p ? (
+                          <>
+                            <span className="block text-[2.4rem] font-normal tabular-nums text-ink">{p.day}</span>
+                            <span className="label-sm text-muted">
+                              {p.month} {p.year}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="label-sm text-muted">TBA</span>
+                        )}
                       </span>
                       <span>
-                        <span className="label text-blue">{EVENT_CATEGORY_LABEL[e.category]}</span>
+                        <span className="flex flex-wrap items-center gap-2">
+                          <span className="label text-blue">{EVENT_CATEGORY_LABEL[e.category]}</span>
+                          {e.status === "live" ? <span className="label border border-gold px-1.5 text-ink">Happening now</span> : null}
+                        </span>
                         <span className="mt-1 block text-[1.15rem] font-semibold text-ink group-hover:text-blue">{e.title}</span>
                         {e.location ? <span className="block text-sm text-muted">{e.location}</span> : null}
                       </span>

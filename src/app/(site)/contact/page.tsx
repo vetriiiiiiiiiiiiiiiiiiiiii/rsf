@@ -4,9 +4,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { InquiryForm } from "@/components/forms/inquiry-form";
 import { Pending } from "@/components/ui/pending";
 import { Arrow } from "@/components/ui/arrow-link";
-import { issueFormToken } from "@/lib/form-guard";
+import { Suspense } from "react";
 import { getSettings } from "@/lib/settings";
-import { INQUIRY_TYPES } from "@/lib/validation";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -21,11 +20,8 @@ const PATHS = [
   { t: "Industry partners", c: "Bring a real problem, data or a pilot.", href: "/ecosystem?type=INDUSTRY#enquire" },
 ];
 
-export default async function ContactPage({ searchParams }: PageProps<"/contact">) {
-  const sp = await searchParams;
-  const s = await getSettings();
-  const requested = typeof sp.type === "string" ? sp.type : "";
-  const defaultType = (INQUIRY_TYPES as readonly string[]).includes(requested) ? requested : "GENERAL";
+export default function ContactPage() {
+  const s = getSettings();
 
   return (
     <>
@@ -84,7 +80,9 @@ export default async function ContactPage({ searchParams }: PageProps<"/contact"
             </dl>
           </div>
           <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-            <InquiryForm key={defaultType} token={issueFormToken("inquiry")} defaultType={defaultType} />
+            <Suspense>
+              <InquiryForm />
+            </Suspense>
           </div>
         </div>
       </section>

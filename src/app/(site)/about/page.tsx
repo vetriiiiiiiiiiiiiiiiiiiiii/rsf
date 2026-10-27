@@ -105,7 +105,7 @@ export default async function AboutPage() {
           {leaders.length ? (
             <ul className="mt-16 space-y-24">
               {leaders.map((l, i) => (
-                <li key={l.id} className="grid-12 gap-y-8">
+                <li key={l.slug} className="grid-12 gap-y-8">
                   <InView data-crop className={`col-span-10 sm:col-span-6 lg:col-span-4 ${i % 2 ? "lg:col-start-8 lg:row-start-1" : ""}`}>
                     <Portrait image={l.image} name={l.name} />
                   </InView>

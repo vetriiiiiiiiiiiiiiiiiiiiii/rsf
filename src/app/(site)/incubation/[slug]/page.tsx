@@ -2,11 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb, Facts } from "@/components/layout/page-header";
-import { ProgramGlyph } from "@/components/art/program-glyph";
+import { ProgramVisual } from "@/components/art/program-visual";
 import { InView } from "@/components/motion/in-view";
 import { Pending } from "@/components/ui/pending";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { getProgram, getPrograms } from "@/lib/queries";
+
+export const dynamicParams = false;
+export function generateStaticParams() {
+  return getPrograms().map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: PageProps<"/incubation/[slug]">): Promise<Metadata> {
   const p = await getProgram((await params).slug);
@@ -18,7 +23,7 @@ export default async function ProgramPage({ params }: PageProps<"/incubation/[sl
   const { slug } = await params;
   const [program, all] = await Promise.all([getProgram(slug), getPrograms()]);
   if (!program) notFound();
-  const idx = all.findIndex((p) => p.id === program.id);
+  const idx = all.findIndex((p) => p.slug === program.slug);
   const next = all[(idx + 1) % all.length];
 
   return (
@@ -43,7 +48,7 @@ export default async function ProgramPage({ params }: PageProps<"/incubation/[sl
         </InView>
         <InView data-draw className="col-span-12 sm:col-span-8 lg:col-span-4 lg:col-start-9">
           <div className="border border-rule bg-white">
-            <ProgramGlyph kind={program.illustration} label={`Illustration for ${program.name}`} className="aspect-square w-full" />
+            <ProgramVisual image={program.image} kind={program.illustration} name={program.name} priority className="aspect-[4/3] w-full" />
           </div>
                   </InView>
       </div>
@@ -82,7 +87,7 @@ export default async function ProgramPage({ params }: PageProps<"/incubation/[sl
         </div>
       </div>
 
-      {next && next.id !== program.id ? (
+      {next && next.slug !== program.slug ? (
         <Link href={`/incubation/${next.slug}`} className="group block border-t border-rule bg-pale">
           <div className="shell flex items-center justify-between gap-6 py-10">
             <span>

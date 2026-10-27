@@ -36,7 +36,7 @@ export default async function NewsPage() {
             {rest.length ? (
               <ol>
                 {rest.map((n) => (
-                  <li key={n.id}>
+                  <li key={n.slug}>
                     <Link href={`/news/${n.slug}`} className="group grid gap-2 border-b border-rule py-7 md:grid-cols-[12rem_1fr_1fr] md:gap-8">
                       <span className="label pt-1 text-muted">{formatDate(n.publishedAt, { day: "2-digit", month: "short", year: "numeric" })}</span>
                       <span className="text-[1.35rem] font-normal leading-snug text-ink group-hover:text-blue">{n.title}</span>

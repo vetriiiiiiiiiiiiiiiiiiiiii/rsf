@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
-import { ProgramGlyph } from "@/components/art/program-glyph";
+import { ProgramVisual } from "@/components/art/program-visual";
 import { Pending } from "@/components/ui/pending";
 import { ArrowLink, Arrow } from "@/components/ui/arrow-link";
 import { InView } from "@/components/motion/in-view";
@@ -52,11 +52,11 @@ export default async function IncubationPage() {
           {programs.length ? (
             <ol>
               {programs.map((p, i) => (
-                <li key={p.id}>
+                <li key={p.slug}>
                   <Link href={`/incubation/${p.slug}`} className="group grid grid-cols-[3rem_1fr] items-start gap-x-4 gap-y-4 border-t border-rule py-8 transition-colors hover:border-blue md:grid-cols-[4rem_7rem_1fr_14rem] md:gap-x-8">
                     <span className="label pt-2 text-blue">{String(i + 1).padStart(2, "0")}</span>
                     <InView data-draw amount={0.5} className="col-start-2 row-start-2 w-24 border border-rule bg-white md:col-start-auto md:row-start-auto md:w-full">
-                      <ProgramGlyph kind={p.illustration} className="aspect-square w-full" />
+                      <ProgramVisual image={p.image} kind={p.illustration} name={p.name} sizes="140px" className="aspect-square w-full" />
                     </InView>
                     <div className="col-start-2 row-start-1 md:col-start-auto md:row-start-auto">
                       <h2 className="text-[clamp(1.6rem,3vw,2.6rem)] font-normal leading-[1.02] text-ink transition-colors group-hover:text-blue">

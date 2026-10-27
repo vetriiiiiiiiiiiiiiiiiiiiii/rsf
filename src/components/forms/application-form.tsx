@@ -2,11 +2,24 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { submitApplication, type FormState } from "@/app/actions/public";
-import { SuccessPanel, Consent, FileField, FormAlert, GuardFields, SelectField, SubmitButton, TextArea, TextField } from "./fields";
-import { STAGES } from "@/lib/validation";
+import { useSearchParams } from "next/navigation";
+import { reference, submitToService, type FormState } from "@/lib/forms";
+import { SuccessPanel, Consent, FormAlert, GuardFields, SelectField, SubmitButton, TextArea, TextField } from "./fields";
+import { applicationSchema, STAGES } from "@/lib/validation";
 
 const initial: FormState = { status: "idle" };
+
+const KEYS = [
+  "founderName", "email", "phone", "institution", "city", "ventureName", "sector", "stage", "programSlug",
+  "problem", "solution", "teamSize", "team", "website", "pitchDeckUrl", "support", "consent",
+] as const;
+
+async function send(_prev: FormState, data: FormData): Promise<FormState> {
+  const ref = reference();
+  data.set("reference", ref);
+  const r = await submitToService("Incubation application", applicationSchema, data, [...KEYS, "reference"]);
+  return r.status === "success" ? { status: "success", reference: ref } : r;
+}
 
 const PARTS = [
   { id: "founder", n: "01", t: "Founder" },
@@ -31,8 +44,10 @@ function Part({ id, n, t, children }: { id: string; n: string; t: string; childr
   );
 }
 
-export function ApplicationForm({ token, programs, defaultProgram }: { token: string; programs: { slug: string; name: string }[]; defaultProgram?: string }) {
-  const [state, action] = useActionState(submitApplication, initial);
+export function ApplicationForm({ programs }: { programs: { slug: string; name: string }[] }) {
+  const [state, action] = useActionState(send, initial);
+  const requested = useSearchParams().get("programme");
+  const defaultProgram = programs.some((p) => p.slug === requested) ? (requested ?? undefined) : undefined;
   const v = state.values ?? {};
   const e = state.errors ?? {};
 
@@ -43,7 +58,7 @@ export function ApplicationForm({ token, programs, defaultProgram }: { token: st
         <p className="label text-blue">Application received</p>
         <p className="display-md mt-5 text-ink">Thank you.</p>
         <p className="mt-5 max-w-[52ch] text-[1.05rem] leading-relaxed text-ink">
-          Your application has been stored. Please keep your reference number — quote it in any correspondence about this application.
+          Your application has been sent. Please keep your reference number — quote it in any correspondence about this application.
         </p>
         <p className="mt-8 inline-block border border-ink px-5 py-3 font-mono text-xl tracking-[0.08em] text-ink">{state.reference}</p>
         <p className="mt-8 text-sm text-muted">
@@ -72,8 +87,8 @@ export function ApplicationForm({ token, programs, defaultProgram }: { token: st
         </ol>
       </nav>
 
-      <form action={action} className="relative space-y-14" noValidate encType="multipart/form-data">
-        <GuardFields token={token} />
+      <form action={action} className="relative space-y-14" noValidate>
+        <GuardFields />
         <FormAlert message={state.message} errors={state.errors} version={state} />
 
         <Part {...PARTS[0]}>
@@ -117,7 +132,7 @@ export function ApplicationForm({ token, programs, defaultProgram }: { token: st
 
         <Part {...PARTS[4]}>
           <TextArea name="support" label="What support are you looking for from RS Foundation?" required rows={4} maxLength={3000} defaultValue={v.support} error={e.support} />
-          <FileField name="pitchDeck" label="Pitch deck" accept="application/pdf" hint="PDF, up to 10 MB. Visible only to the review team." error={e.pitchDeck} />
+          <TextField name="pitchDeckUrl" label="Pitch deck link" inputMode="url" hint="A shareable link (Google Drive, Dropbox, etc.) to your deck, if you have one." defaultValue={v.pitchDeckUrl} error={e.pitchDeckUrl} />
         </Part>
 
         <Part {...PARTS[5]}>
@@ -130,7 +145,7 @@ export function ApplicationForm({ token, programs, defaultProgram }: { token: st
           </Consent>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <SubmitButton pendingLabel="Submitting application…">Submit application</SubmitButton>
-            <p className="text-sm text-muted">You will receive a reference number once it is saved.</p>
+            <p className="text-sm text-muted">You will receive a reference number once it is sent.</p>
           </div>
         </Part>
       </form>

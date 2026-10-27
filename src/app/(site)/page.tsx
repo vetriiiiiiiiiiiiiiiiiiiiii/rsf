@@ -61,7 +61,7 @@ export default async function HomePage() {
             {programs.length ? (
               <ProgramDirectory
                 programs={programs.map((p) => ({
-                  id: p.id,
+                  id: p.slug,
                   slug: p.slug,
                   name: p.name,
                   summary: p.summary,
@@ -69,6 +69,7 @@ export default async function HomePage() {
                   illustration: p.illustration,
                   provisional: p.provisional,
                   acceptingApplications: p.acceptingApplications,
+                  image: p.image,
                 }))}
               />
             ) : (

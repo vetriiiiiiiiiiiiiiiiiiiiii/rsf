@@ -1,7 +1,7 @@
 import Image from "next/image";
-import type { PublicImage } from "@/lib/queries";
+import type { SiteImage } from "@/content";
 
-/** Renders an uploaded image through the media route with Next.js optimisation. */
+/** Renders a site image from /public. */
 export function MediaImage({
   image,
   sizes,
@@ -10,17 +10,16 @@ export function MediaImage({
   priority = false,
   alt,
 }: {
-  image: PublicImage;
+  image: SiteImage;
   sizes: string;
   className?: string;
   fill?: boolean;
   priority?: boolean;
   alt?: string;
 }) {
-  const src = `/media/${image.id}`;
   const altText = alt ?? image.alt;
-  if (fill || !image.width || !image.height) {
-    return <Image src={src} alt={altText} fill sizes={sizes} className={`object-cover ${className}`} priority={priority} />;
+  if (fill) {
+    return <Image src={image.src} alt={altText} fill sizes={sizes} className={`object-cover ${className}`} priority={priority} />;
   }
-  return <Image src={src} alt={altText} width={image.width} height={image.height} sizes={sizes} className={className} priority={priority} />;
+  return <Image src={image.src} alt={altText} width={image.width} height={image.height} sizes={sizes} className={className} priority={priority} />;
 }

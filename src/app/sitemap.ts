@@ -1,23 +1,18 @@
 import type { MetadataRoute } from "next";
-import { db } from "@/lib/db";
+import { EVENTS, NEWS, PROGRAMS, STARTUPS } from "@/content";
 import { siteUrl } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl();
-  const statics = ["", "/about", "/incubation", "/startups", "/ecosystem", "/events", "/news", "/contact", "/apply", "/privacy", "/terms"].map((p) => ({
-    url: `${base}${p}`,
-    changeFrequency: "weekly" as const,
-    priority: p === "" ? 1 : 0.7,
-  }));
-  const published = { where: { status: "PUBLISHED" as const }, select: { slug: true, updatedAt: true } };
-  const [programs, startups, events, news] = await Promise.all([
-    db.program.findMany(published),
-    db.startup.findMany(published),
-    db.event.findMany(published),
-    db.newsPost.findMany(published),
-  ]);
-  const entries = (prefix: string, rows: { slug: string; updatedAt: Date }[]) => rows.map((r) => ({ url: `${base}${prefix}/${r.slug}`, lastModified: r.updatedAt }));
-  return [...statics, ...entries("/incubation", programs), ...entries("/startups", startups), ...entries("/events", events), ...entries("/news", news)];
+  const page = (p: string, priority = 0.7) => ({ url: `${base}${p}/`.replace(/\/\/$/, "/"), changeFrequency: "weekly" as const, priority });
+  return [
+    page("", 1),
+    ...["/about", "/incubation", "/startups", "/ecosystem", "/events", "/news", "/rsf-policy", "/contact", "/apply", "/privacy", "/terms"].map((p) => page(p)),
+    ...PROGRAMS.map((p) => page(`/incubation/${p.slug}`, 0.6)),
+    ...EVENTS.map((e) => page(`/events/${e.slug}`, 0.6)),
+    ...STARTUPS.map((s) => page(`/startups/${s.slug}`, 0.5)),
+    ...NEWS.map((n) => page(`/news/${n.slug}`, 0.5)),
+  ];
 }

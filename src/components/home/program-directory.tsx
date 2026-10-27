@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ProgramGlyph } from "@/components/art/program-glyph";
+import { ProgramVisual } from "@/components/art/program-visual";
+import type { SiteImage } from "@/content";
 import { Arrow } from "@/components/ui/arrow-link";
 
 export type DirectoryProgram = {
@@ -15,6 +16,7 @@ export type DirectoryProgram = {
   illustration: string;
   provisional: boolean;
   acceptingApplications: boolean;
+  image: SiteImage | null;
 };
 
 function DrawOnMount({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -63,7 +65,7 @@ export function ProgramDirectory({ programs }: { programs: DirectoryProgram[] })
               <div id={`program-detail-${p.id}`} className={`lg:hidden ${selected ? "block" : "hidden"}`}>
                 <div className="grid grid-cols-[96px_1fr] gap-5 pb-6 sm:grid-cols-[140px_1fr]">
                   <DrawOnMount key={selected ? "on" : "off"} className="bg-white">
-                    <ProgramGlyph kind={p.illustration} className="aspect-square w-full" />
+                    <ProgramVisual image={p.image} kind={p.illustration} name={p.name} sizes="140px" className="aspect-square w-full" />
                   </DrawOnMount>
                   <div>
                     <p className="text-[0.98rem] leading-relaxed text-ink">{p.summary}</p>
@@ -97,7 +99,7 @@ export function ProgramDirectory({ programs }: { programs: DirectoryProgram[] })
                   <span className="label text-muted">{current.provisional ? "Proposed — awaiting confirmation" : current.acceptingApplications ? "Accepting applications" : "Programme"}</span>
                 </div>
                 <DrawOnMount className="mt-5 border border-rule bg-white">
-                  <ProgramGlyph kind={current.illustration} label={`Illustration for ${current.name}`} className="aspect-square w-full" />
+                  <ProgramVisual image={current.image} kind={current.illustration} name={current.name} className="aspect-[4/3] w-full" />
                 </DrawOnMount>
                 <p className="mt-6 max-w-[48ch] text-[1.05rem] leading-relaxed text-ink">{current.summary}</p>
                 {current.audience ? (

@@ -5,9 +5,6 @@ import "./globals.css";
 
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
 
-// Content is managed in the database; render on request so edits appear immediately.
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: { default: `${SITE_NAME} — Innovation & Incubation`, template: `%s — ${SITE_NAME}` },

@@ -5,6 +5,7 @@ import { ImageResponse } from "next/og";
 export const alt = "R Shivakumar Foundation — Ideas are only the beginning.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+export const dynamic = "force-static";
 
 export default async function OpengraphImage() {
   const logo = await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), "public/brand/rs-foundation-logo.png")).catch(() => null);

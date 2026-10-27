@@ -57,6 +57,7 @@ export const applicationSchema = z.object({
   teamSize: z.coerce.number({ message: "Enter a number." }).int().min(1, "At least one person.").max(500),
   team: trimmed(3000).min(20, "Tell us a little about the team (20+ characters)."),
   website: url,
+  pitchDeckUrl: url,
   support: trimmed(3000).min(20, "Tell us what support you are looking for (20+ characters)."),
   consent: z.literal("on", { message: "Please confirm you agree to the handling of your application." }),
 });

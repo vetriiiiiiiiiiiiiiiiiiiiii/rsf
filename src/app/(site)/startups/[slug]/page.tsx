@@ -5,12 +5,19 @@ import { StartupPlate } from "@/components/art/startup-plate";
 import { MediaImage } from "@/components/ui/media-image";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { InView } from "@/components/motion/in-view";
-import { getStartup } from "@/lib/queries";
+import { getStartup, getStartups } from "@/lib/queries";
+
+export const dynamicParams = false;
+export function generateStaticParams() {
+  // A static export needs at least one path; "_" renders the not-found page until startups are added.
+  const slugs = getStartups().map((s) => ({ slug: s.slug }));
+  return slugs.length ? slugs : [{ slug: "_" }];
+}
 
 export async function generateMetadata({ params }: PageProps<"/startups/[slug]">): Promise<Metadata> {
   const s = await getStartup((await params).slug);
   if (!s) return { title: "Venture not found" };
-  return { title: s.name, description: s.tagline, openGraph: { title: s.name, description: s.tagline, images: s.image ? [`/media/${s.image.id}`] : undefined } };
+  return { title: s.name, description: s.tagline, openGraph: { title: s.name, description: s.tagline, images: s.image ? [s.image.src] : undefined } };
 }
 
 export default async function StartupPage({ params }: PageProps<"/startups/[slug]">) {

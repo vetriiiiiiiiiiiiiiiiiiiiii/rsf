@@ -13,6 +13,7 @@ export const NAV = [
 ] as const;
 
 export const EVENT_CATEGORY_LABEL: Record<string, string> = {
+  HACKATHON: "Hackathon",
   WORKSHOP: "Workshop",
   FOUNDER_SESSION: "Founder session",
   DEMO_DAY: "Demo day",

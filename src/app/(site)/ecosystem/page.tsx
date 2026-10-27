@@ -4,7 +4,7 @@ import { InquiryForm } from "@/components/forms/inquiry-form";
 import { MediaImage } from "@/components/ui/media-image";
 import { Portrait } from "@/components/ui/portrait";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { issueFormToken } from "@/lib/form-guard";
+import { Suspense } from "react";
 import { getPartners, getPeople } from "@/lib/queries";
 import { PARTNER_KIND_LABEL } from "@/lib/site";
 
@@ -48,11 +48,9 @@ const DOORS = [
   },
 ] as const;
 
-export default async function EcosystemPage({ searchParams }: PageProps<"/ecosystem">) {
-  const sp = await searchParams;
-  const [mentors, partners] = await Promise.all([getPeople("MENTOR"), getPartners()]);
-  const requested = typeof sp.type === "string" ? sp.type : undefined;
-  const defaultType = DOORS.some((d) => d.type === requested) ? requested : "INDUSTRY";
+export default function EcosystemPage() {
+  const mentors = getPeople("MENTOR");
+  const partners = getPartners();
 
   return (
     <>
@@ -89,7 +87,7 @@ export default async function EcosystemPage({ searchParams }: PageProps<"/ecosys
           {mentors.length ? (
             <ul className="mt-12 grid gap-x-[var(--col-gap)] gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
               {mentors.map((m, i) => (
-                <li key={m.id} className={i % 4 === 1 ? "lg:mt-16" : i % 4 === 3 ? "lg:mt-8" : ""}>
+                <li key={m.slug} className={i % 4 === 1 ? "lg:mt-16" : i % 4 === 3 ? "lg:mt-8" : ""}>
                   <Portrait image={m.image} name={m.name} sizes="(min-width:1024px) 22vw, 45vw" />
                   <p className="mt-6 text-[1.3rem] font-normal text-ink">{m.name}</p>
                   <p className="text-sm text-muted">{m.role}</p>
@@ -130,7 +128,7 @@ export default async function EcosystemPage({ searchParams }: PageProps<"/ecosys
                   </>
                 );
                 return (
-                  <li key={p.id} className="border-b border-r border-rule">
+                  <li key={p.slug} className="border-b border-r border-rule">
                     {p.url ? (
                       <a href={p.url} target="_blank" rel="noopener noreferrer" className="flex aspect-[4/3] flex-col justify-between p-5 transition-colors hover:bg-pale">
                         {inner}
@@ -178,14 +176,16 @@ export default async function EcosystemPage({ searchParams }: PageProps<"/ecosys
       <section id="enquire" aria-labelledby="enquire-title" className="scroll-mt-24 border-t border-ink py-20 md:py-28">
         <div className="shell grid-12 gap-y-10">
           <div className="col-span-12 lg:col-span-4">
-            <p className="label text-blue">Form E-01</p>
+            <p className="label text-blue">Get involved</p>
             <h2 id="enquire-title" className="display-md mt-5 text-ink">
               Start a conversation
             </h2>
             <p className="mt-5 max-w-[36ch] leading-relaxed text-muted">Tell us who you are and how you would like to be involved. A member of the team will reply by email.</p>
           </div>
           <div className="col-span-12 lg:col-span-7 lg:col-start-6">
-            <InquiryForm key={defaultType} token={issueFormToken("inquiry")} defaultType={defaultType} types={["INDUSTRY", "MENTOR", "INVESTOR", "INSTITUTIONAL", "GENERAL"]} />
+            <Suspense>
+              <InquiryForm defaultType="INDUSTRY" types={["INDUSTRY", "MENTOR", "INVESTOR", "INSTITUTIONAL", "GENERAL"]} />
+            </Suspense>
           </div>
         </div>
       </section>
